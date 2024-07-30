@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChefSymphony</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>ChefSymphony</h1>
+      <p>Welcome! You have been authenticated with Spotify.</p>
+
+      <!-- Display track information -->
+      <div class="track-info">
+        <h2>Track Information</h2>
+        <p id="track-title">Loading...</p>
+        <p id="track-artist">Loading...</p>
+        <img id="track-image" src="" alt="Track Image" />
+        <br />
+        <a id="track-link" href="" target="_blank">Listen on Spotify</a>
+      </div>
+
+      <!-- Player controls -->
+      <div id="player">
+        <button id="play-btn" disabled>Play</button>
+        <button id="pause-btn" disabled>Pause</button>
+      </div>
+
+      <!-- New track button -->
+      <div>
+        <button id="new-track-btn">Get New Track</button>
+      </div>
+
+      <!-- Display access token -->
+      <div class="token">
+        <h2>Your Access Token:</h2>
+        <p>{{ access_token }}</p>
+      </div>
+    </div>
+
+    <!-- Spotify Web Playback SDK -->
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script>
+      // Initialize Spotify Web Playback SDK
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        const token = "{{ access_token }}";
+        let trackId = "{{ track_id }}";
+
+        // Call function from scripts.js
+        initializeSpotifyPlayer(token, trackId);
+      };
+    </script>
+  </body>
+</html>

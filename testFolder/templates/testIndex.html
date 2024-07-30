@@ -1,0 +1,45 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flask Example</title>
+  </head>
+  <body>
+    <h1>Flask와 JavaScript 통신 예제</h1>
+    <button id="sendButton">데이터 요청</button>
+    <button id="getDataButton">데이터 받기</button>
+    <div id="response"></div>
+    <div id="data"></div>
+
+    <script>
+      document
+        .getElementById("sendButton")
+        .addEventListener("click", function () {
+          fetch("/button_click", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ action: "button_click" }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("response").innerText = data.status;
+              console.log(data);
+            });
+        });
+
+      document
+        .getElementById("getDataButton")
+        .addEventListener("click", function () {
+          fetch("/get_data")
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("data").innerText = JSON.stringify(data);
+              console.log(data);
+            });
+        });
+    </script>
+  </body>
+</html>
