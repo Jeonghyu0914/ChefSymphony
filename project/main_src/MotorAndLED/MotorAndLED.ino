@@ -51,9 +51,9 @@ void connect_wifi(){
   Serial.println(WiFi.localIP());
 }
 
-int move_curtain(){
+void move_curtain(int bright){
   //커튼 조정하는 함수
-  return 0;
+  
 }
 
 void setup() {
@@ -104,6 +104,9 @@ void loop() {
   int ang2 = firebase.getInt("Servo/angle2");
   sv1.write(ang1);
   sv2.write(ang2);
+
+  //Moving curtain
+  move_curtain(brightness_out);
 
   delay(500);
 }
