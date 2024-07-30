@@ -1,21 +1,4 @@
-void move_curtain(int bright) {
-  // 커튼을 조정하는 함수
-  // 밝기 값(0-4095)을 서보 모터 각도(0-180)로 변환
-  int angle = map(bright, 0, 4095, 0, 180);
 
-  // 서보 모터를 해당 각도로 이동
-  sv1.write(angle);
-  sv2.write(angle);
-
-  Serial.print("Brightness: ");
-  Serial.print(bright);
-  Serial.print(" -> Curtain angle: ");
-  Serial.println(angle);
-}
-이제 전체 코드는 다음과 같습니다:
-
-cpp
-코드 복사
 //LED strip 1개, 서보모터 2개, exterior 조도센서 1개
 
 //library include
