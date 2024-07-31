@@ -105,8 +105,8 @@ void loop() {
   leds.show();
 
   //Move Servo Motor
-  // int ang1 = firebase.getInt("Servo/angle1");
-  // sv1.write(ang1);
+  int ang1 = firebase.getInt("Servo/angle1");
+  sv1.write(ang1);
 
   delay(500);
 }
