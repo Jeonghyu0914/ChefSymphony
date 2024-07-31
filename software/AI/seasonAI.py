@@ -22,12 +22,12 @@ winter = np.column_stack((winter_temp, winter_humidity))
 
 # 평온 데이터 생성
 mild_temp = np.random.uniform(10, 28, n_samples)
-mild_humidity = np.random.uniform(40, 60, n_samples)
+mild_humidity = np.random.uniform(40, 75, n_samples)
 mild = np.column_stack((mild_temp, mild_humidity))
 
 # 비 데이터 생성
 rain_temp = np.random.uniform(10, 30, n_samples)
-rain_humidity = np.random.uniform(80, 100, n_samples)
+rain_humidity = np.random.uniform(75, 100, n_samples)
 rain = np.column_stack((rain_temp, rain_humidity))
 
 # 데이터 합치기

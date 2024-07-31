@@ -19,17 +19,17 @@ cafe_rest_brightness = np.random.uniform(500, 1000, n_samples)
 cafe_rest = np.column_stack((cafe_rest_noise, cafe_rest_brightness))
 
 # 바 데이터 생성
-bar_noise = np.random.uniform(30, 60, n_samples)
+bar_noise = np.random.uniform(30, 300, n_samples)
 bar_brightness = np.random.uniform(1000, 4000, n_samples)
 bar = np.column_stack((bar_noise, bar_brightness))
 
 # 술집 데이터 생성
-pub_noise = np.random.uniform(60, 150, n_samples)
+pub_noise = np.random.uniform(4000, 4095, n_samples)
 pub_brightness = np.random.uniform(1000, 4000, n_samples)
 pub = np.column_stack((pub_noise, pub_brightness))
 
 # 클럽 데이터 생성
-club_noise = np.random.uniform(60, 150, n_samples)
+club_noise = np.random.uniform(4000, 4095, n_samples)
 club_brightness = np.random.uniform(100, 500, n_samples)
 club = np.column_stack((club_noise, club_brightness))
 

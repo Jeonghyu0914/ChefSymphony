@@ -54,11 +54,11 @@ def refresh():
     brightness = data.get('Brightness').get('interior')
     noise = data.get('Noise')
     
-    genre = predFunc.predGenre(temperature, humidity, brightness, noise)
+    genre = predFunc.predGenre(temperature, humidity, noise, brightness)
     track_ids = get_tracks_by_genre(sp, genre)
-    if(len(track_ids) == 0):
-        while(len(track_ids) != 0):
-                track_ids = get_tracks_by_genre(sp, genre)
+    while(len(track_ids) == 0):
+        genre = predFunc.predGenre(temperature, humidity, noise, brightness)
+        track_ids = get_tracks_by_genre(sp, genre)
     track_id = track_ids[random.randint(0, len(track_ids)-1)]
     return jsonify({'track_id': track_id, 'genre':genre})
 
