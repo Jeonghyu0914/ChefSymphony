@@ -1,4 +1,3 @@
-
 //LED strip 1개, 서보모터 2개, exterior 조도센서 1개
 
 //library include
@@ -53,9 +52,8 @@ void connect_wifi(){
 }
 
 void move_curtain(int bright) {
-  // 커튼을 조정하는 함수
-  // 밝기 값(0-4095)을 서보 모터 각도(0-180)로 변환
-  int angle = map(bright, 0, 4095, 0, 180);
+  // 밝기 값이 600보다 작으면 서보 모터 각도를 0도로, 크면 140도로 설정
+  int angle = (bright < 600) ? 0 : 140;
 
   // 서보 모터를 해당 각도로 이동
   sv1.write(angle);
