@@ -11,23 +11,23 @@ np.random.seed(42)
 n_samples = 1000
 
 # 여름 데이터 생성
-summer_temp = np.random.uniform(25, 35, n_samples)
+summer_temp = np.random.uniform(28, 35, n_samples)
 summer_humidity = np.random.uniform(60, 90, n_samples)
 summer = np.column_stack((summer_temp, summer_humidity))
 
 # 겨울 데이터 생성
-winter_temp = np.random.uniform(-10, 5, n_samples)
+winter_temp = np.random.uniform(-10, 10, n_samples)
 winter_humidity = np.random.uniform(10, 40, n_samples)
 winter = np.column_stack((winter_temp, winter_humidity))
 
 # 평온 데이터 생성
-mild_temp = np.random.uniform(10, 20, n_samples)
+mild_temp = np.random.uniform(10, 28, n_samples)
 mild_humidity = np.random.uniform(40, 60, n_samples)
 mild = np.column_stack((mild_temp, mild_humidity))
 
 # 비 데이터 생성
-rain_temp = np.random.uniform(15, 25, n_samples)
-rain_humidity = np.random.uniform(70, 100, n_samples)
+rain_temp = np.random.uniform(10, 30, n_samples)
+rain_humidity = np.random.uniform(80, 100, n_samples)
 rain = np.column_stack((rain_temp, rain_humidity))
 
 # 데이터 합치기

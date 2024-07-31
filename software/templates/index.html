@@ -32,27 +32,12 @@
 
       <!-- New track button -->
       <div>
-        <button id="new-track-btn">Get New Track</button>
-      </div>
-
-      <div>
-        <button id="firebase-btn">Add to Firebase</button>
+        <button id="refresh-btn">Refresh</button>
       </div>
     </div>
     <!-- Spotify Web Playback SDK -->
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    <script>
-      // Initialize Spotify Web Playback SDK
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        const token = "{{ access_token }}";
-        let trackId = "{{ track_id }}";
-        const genre = "{{ genre }}";
-
-        // Call function from scripts.js
-        initializeSpotifyPlayer(token, trackId, genre);
-      };
-    </script>
     <script type="module">
       // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
@@ -78,65 +63,66 @@
       const app = initializeApp(firebaseConfig);
       const database = getDatabase(app);
 
-      // Function to add data to Firebase
-      function addToFirebase(key, value) {
-        set(ref(database, key), value)
-          .then(() => {
-            console.log("Data added to Firebase successfully");
-          })
-          .catch((error) => {
-            console.error("Error adding to Firebase: ", error);
-          });
-      }
+      // Function to load data from Realtime Database
+      async function loadData(database) {
+        const dbRef = ref(database, "Sensors");
+        try {
+          const snapshot = await get(dbRef);
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            console.log("Data loaded:", data);
 
-      // Add event listener to the button
-      document.getElementById("firebase-btn").addEventListener("click", () => {
-        const key = "your_key"; // Replace with your desired key
-        const value = "your_value"; // Replace with your desired value
-        addToFirebase(key, value);
-      });
+            // Send data to server
+            const response = await fetch("/refresh", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
 
-      // Function to send button click event to server
-      function sendButtonClick(database) {
-        const dbRef = ref(database, "your_key");
-        get(dbRef)
-          .then((snapshot) => {
-            if (snapshot.exists()) {
-              const value = snapshot.val();
-              fetch("/button_click", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ value: value }),
-              }).then((response) => response.json());
-            } else {
-              console.log("No data available at the specified key.");
-            }
-          })
-          .catch((error) => {
-            console.error("Error getting data from Firebase:", error);
-          });
+            const jsonResponse = await response.json();
+            return jsonResponse;
+          } else {
+            console.log("No data available at the specified key.");
+          }
+        } catch (error) {
+          console.error("Error getting data from Firebase:", error);
+        }
       }
 
       // Fetch new track
       document
-        .getElementById("new-track-btn")
+        .getElementById("refresh-btn")
         .addEventListener("click", async () => {
           document.getElementById("track-title").textContent = "Loading...";
           document.getElementById("track-artist").textContent = "";
-          sendButtonClick(database);
 
-          const response = await fetch("/new_track");
-          const data = await response.json();
-          trackId = data.track_id;
-          genre = data.genre;
-          document.getElementById("track-title").textContent = data.name;
-          document.getElementById("track-artist").textContent = data.artists;
-          document.getElementById("genre").textContent = genre;
-          fetchTrackDetails(token, trackId);
-          playTrack(deviceId, trackId, token);
+          // get track info
+          const response = await loadData(database);
+          if (response) {
+            console.log(response);
+            const token = "{{ access_token }}";
+            const trackId = response.track_id;
+            const genre = response.genre;
+
+            initializeSpotifyPlayer(token, trackId, genre);
+          }
         });
+
+      // Initialize Spotify Web Playback SDK
+      window.onSpotifyWebPlaybackSDKReady = async () => {
+        const token = "{{ access_token }}";
+        const response = await loadData(database);
+        if (response) {
+          console.log(response);
+          const trackId = response.track_id;
+          const genre = response.genre;
+
+          // Call function to initialize Spotify Player
+          initializeSpotifyPlayer(token, trackId, genre);
+        }
+      };
     </script>
   </body>
 </html>

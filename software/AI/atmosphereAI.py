@@ -8,38 +8,41 @@ from joblib import dump
 # 데이터 생성
 np.random.seed(42)
 
+# brigthness - 100~500 밝음 / 500~1000 중간 / 1000~4000 어두움
+# noise - 60~150 시끄러움 / 30~60 보통 / 0~30 조용함
+
 n_samples = 1000
 
 # 카페, 레스토랑 데이터 생성
-cafe_rest_noise = np.random.uniform(25, 35, n_samples)
-cafe_rest_brightness = np.random.uniform(60, 90, n_samples)
+cafe_rest_noise = np.random.uniform(0, 30, n_samples)
+cafe_rest_brightness = np.random.uniform(500, 1000, n_samples)
 cafe_rest = np.column_stack((cafe_rest_noise, cafe_rest_brightness))
 
 # 바 데이터 생성
-bar_noise = np.random.uniform(-10, 5, n_samples)
-bar_brightness = np.random.uniform(10, 40, n_samples)
+bar_noise = np.random.uniform(30, 60, n_samples)
+bar_brightness = np.random.uniform(1000, 4000, n_samples)
 bar = np.column_stack((bar_noise, bar_brightness))
 
 # 술집 데이터 생성
-pub_noise = np.random.uniform(10, 20, n_samples)
-pub_brightness = np.random.uniform(40, 60, n_samples)
+pub_noise = np.random.uniform(60, 150, n_samples)
+pub_brightness = np.random.uniform(1000, 4000, n_samples)
 pub = np.column_stack((pub_noise, pub_brightness))
 
 # 클럽 데이터 생성
-club_noise = np.random.uniform(15, 25, n_samples)
-club_brightness = np.random.uniform(70, 100, n_samples)
+club_noise = np.random.uniform(60, 150, n_samples)
+club_brightness = np.random.uniform(100, 500, n_samples)
 club = np.column_stack((club_noise, club_brightness))
 
 # 데이터 합치기
 X = np.vstack((cafe_rest, bar, pub, club))
-y = np.array([0]*n_samples + [1]*n_samples + [2]*n_samples + [3]*n_samples)  # 0: 여름, 1: 겨울, 2: 평온, 3: 비
+y = np.array([0]*n_samples + [1]*n_samples + [2]*n_samples + [3]*n_samples)  # 0: 카페-레스토랑, 1: 바, 2: 술집, 3: 클럽
 
 # 데이터프레임으로 변환
-data = pd.DataFrame(X, columns=['noiseerature', 'brightness'])
+data = pd.DataFrame(X, columns=['noise', 'brightness'])
 data['Atmosphere'] = y
 
 # 학습 데이터와 테스트 데이터로 분리
-X_train, X_test, y_train, y_test = train_test_split(data[['noiseerature', 'brightness']], data['Atmosphere'], test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(data[['noise', 'brightness']], data['Atmosphere'], test_size=0.2, random_state=42)
 
 # 하이퍼파라미터 그리드 설정
 param_grid = {

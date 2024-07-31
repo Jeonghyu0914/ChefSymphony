@@ -4,6 +4,9 @@ import random
 from flask import Flask, render_template, request, redirect, jsonify
 from flask_cors import CORS
 import genres
+from joblib import load
+import pandas as pd
+import predFunc
 
 client_id = 'f1482fea7e5843668f71fcd44165a9d7'
 client_secret = '7ff48d3345304e22be48473760f0fbfc'
@@ -27,13 +30,6 @@ def get_tracks_by_genre(sp, genre):
 
 app = Flask(__name__)
 CORS(app)
-
-genre = genres.get_genre()[random.randint(0, len(genres.get_genre())-1)]
-track_ids = get_tracks_by_genre(sp, genre)
-if(len(track_ids) == 0):
-    while(len(track_ids) != 0):
-            track_ids = get_tracks_by_genre(sp, genre)
-track_id = track_ids[random.randint(0, len(track_ids)-1)]
 auth_url = sp_oauth.get_authorize_url()
 
 @app.route('/')
@@ -46,25 +42,25 @@ def callback():
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     access_token = token_info['access_token']
-    track_id = track_ids[random.randint(0, len(track_ids)-1)]
-    return render_template('index.html', access_token=access_token, track_id=track_id, genre=genre)
+    return render_template('index.html', access_token=access_token)
 
-@app.route('/new_track')
-def new_track():
-    genre = genres.get_genre()[random.randint(0, len(genres.get_genre())-1)]
+@app.route('/refresh', methods=['POST'])
+def refresh():
+    data = request.json
+    print("Received data:", data)
+    # Process the data as needed
+    temperature = data.get('Temperature')
+    humidity = data.get('Humidity')
+    brightness = (data.get('Brightness').get('exterior') + data.get('Brightness').get('interior')) / 2
+    noise = data.get('Noise')
+    
+    genre = predFunc.predGenre(temperature, humidity, brightness, noise)
     track_ids = get_tracks_by_genre(sp, genre)
     if(len(track_ids) == 0):
         while(len(track_ids) != 0):
                 track_ids = get_tracks_by_genre(sp, genre)
     track_id = track_ids[random.randint(0, len(track_ids)-1)]
     return jsonify({'track_id': track_id, 'genre':genre})
-
-@app.route('/button_click', methods=['POST'])
-def button_click():
-    data = request.get_json()
-    value = data.get('value')
-    print(f"Button clicked: {value}")
-    return jsonify({'status': 'success', 'value': value})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
