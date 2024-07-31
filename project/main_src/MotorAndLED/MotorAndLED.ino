@@ -11,14 +11,13 @@
 #define pin_CDS 32
 //LED strip
 #define pin_led 12
-#define num_led 30
+#define num_led 40
 //서보 모터
 #define pin_sv1 25
-#define pin_sv2 26
 
 //WiFi setting
-const char *ssid = "나우커피2G"; //Wifi ssid here
-const char *password = "dee01dc173"; //Wifi password here
+const char *ssid = "Galaxy S24"; //Wifi ssid here
+const char *password = "xbmv2457"; //Wifi password here
 
 //Firebase setting
 #define REFERENCE_URL "cookiot-test-default-rtdb.firebaseio.com/"
@@ -29,7 +28,6 @@ Adafruit_NeoPixel leds = Adafruit_NeoPixel(num_led, pin_led, NEO_GRB+NEO_KHZ800)
 
 //Servo setting
 Servo sv1;
-Servo sv2;
 
 //wifi connecting function
 void connect_wifi(){
@@ -51,13 +49,12 @@ void connect_wifi(){
   Serial.println(WiFi.localIP());
 }
 
-void move_curtain(int bright) {
+void move_curtain(int bright){
   // 밝기 값이 600보다 작으면 서보 모터 각도를 0도로, 크면 140도로 설정
-  int angle = (bright < 600) ? 0 : 140;
+  int angle = (bright < 600) ? 120 : 0;
 
   // 서보 모터를 해당 각도로 이동
   sv1.write(angle);
-  sv2.write(angle);
 
   Serial.print("Brightness: ");
   Serial.print(bright);
@@ -74,14 +71,12 @@ void setup() {
   
   //servo
   sv1.attach(pin_sv1);
-  sv2.attach(pin_sv2);
 
   //Wifi connect
   connect_wifi();
 
   //init LED & Servo
   sv1.write(0);
-  sv2.write(0);
   for(int i = 0;i < num_led;i++){
     leds.setPixelColor(i, 0, 0, 0);
   }
@@ -94,7 +89,8 @@ void setup() {
 void loop() {
   //Getting Brightness And Upload to firebase
   int brightness_out = analogRead(pin_CDS);
-  firebase.setInt("Brightness/exterior", brightness_out);
+  move_curtain(brightness_out);
+  firebase.setInt("Sensors/Brightness/exterior", brightness_out);
 
   //Turn on LED
   int numl = firebase.getInt("LED/NUMS");
@@ -109,13 +105,8 @@ void loop() {
   leds.show();
 
   //Move Servo Motor
-  int ang1 = firebase.getInt("Servo/angle1");
-  int ang2 = firebase.getInt("Servo/angle2");
-  sv1.write(ang1);
-  sv2.write(ang2);
-
-  //Moving curtain
-  move_curtain(brightness_out);
+  // int ang1 = firebase.getInt("Servo/angle1");
+  // sv1.write(ang1);
 
   delay(500);
 }
