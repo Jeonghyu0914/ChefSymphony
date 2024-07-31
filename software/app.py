@@ -59,5 +59,12 @@ def new_track():
     track_id = track_ids[random.randint(0, len(track_ids)-1)]
     return jsonify({'track_id': track_id, 'genre':genre})
 
+@app.route('/button_click', methods=['POST'])
+def button_click():
+    data = request.get_json()
+    value = data.get('value')
+    print(f"Button clicked: {value}")
+    return jsonify({'status': 'success', 'value': value})
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)

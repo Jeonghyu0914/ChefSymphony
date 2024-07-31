@@ -102,21 +102,4 @@ function initializeSpotifyPlayer(token, trackId, genre) {
       })
       .catch((e) => console.error(e));
   }
-
-  // Fetch new track
-  document
-    .getElementById("new-track-btn")
-    .addEventListener("click", async () => {
-      document.getElementById("track-title").textContent = "Loading...";
-      document.getElementById("track-artist").textContent = "";
-      const response = await fetch("/new_track");
-      const data = await response.json();
-      trackId = data.track_id;
-      genre = data.genre;
-      document.getElementById("track-title").textContent = data.name;
-      document.getElementById("track-artist").textContent = data.artists;
-      document.getElementById("genre").textContent = genre;
-      fetchTrackDetails(token, trackId);
-      playTrack(deviceId, trackId, token);
-    });
 }

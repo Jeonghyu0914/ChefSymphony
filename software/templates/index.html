@@ -12,7 +12,6 @@
   <body>
     <div class="container">
       <h1>ChefSymphony</h1>
-      <p>Welcome! You have been authenticated with Spotify.</p>
 
       <!-- Display track information -->
       <div class="track-info">
@@ -61,6 +60,7 @@
         getDatabase,
         ref,
         set,
+        get,
       } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 
       const firebaseConfig = {
@@ -95,6 +95,48 @@
         const value = "your_value"; // Replace with your desired value
         addToFirebase(key, value);
       });
+
+      // Function to send button click event to server
+      function sendButtonClick(database) {
+        const dbRef = ref(database, "your_key");
+        get(dbRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const value = snapshot.val();
+              fetch("/button_click", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ value: value }),
+              }).then((response) => response.json());
+            } else {
+              console.log("No data available at the specified key.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error getting data from Firebase:", error);
+          });
+      }
+
+      // Fetch new track
+      document
+        .getElementById("new-track-btn")
+        .addEventListener("click", async () => {
+          document.getElementById("track-title").textContent = "Loading...";
+          document.getElementById("track-artist").textContent = "";
+          sendButtonClick(database);
+
+          const response = await fetch("/new_track");
+          const data = await response.json();
+          trackId = data.track_id;
+          genre = data.genre;
+          document.getElementById("track-title").textContent = data.name;
+          document.getElementById("track-artist").textContent = data.artists;
+          document.getElementById("genre").textContent = genre;
+          fetchTrackDetails(token, trackId);
+          playTrack(deviceId, trackId, token);
+        });
     </script>
   </body>
 </html>
