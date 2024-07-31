@@ -38,14 +38,15 @@ def get_tracks_by_genre(sp, genre):
             track_ids.append(t['id'])
     return track_ids
 
-genre = genres.get_genre()[random.randint(0, len(genres.get_genre())-1)]
-print(genre)
-track_ids = get_tracks_by_genre(sp, genre)
-print(len(track_ids))
-
 app = Flask(__name__)
 CORS(app)
 
+genre = genres.get_genre()[random.randint(0, len(genres.get_genre())-1)]
+track_ids = get_tracks_by_genre(sp, genre)
+if(len(track_ids) == 0):
+    while(len(track_ids) != 0):
+            track_ids = get_tracks_by_genre(sp, genre)
+track_id = track_ids[random.randint(0, len(track_ids)-1)]
 auth_url = sp_oauth.get_authorize_url()
 
 @app.route('/')
@@ -58,15 +59,18 @@ def callback():
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     access_token = token_info['access_token']
-    print(access_token)
-
     track_id = track_ids[random.randint(0, len(track_ids)-1)]
-    return render_template('index.html', access_token=access_token, track_id=track_id)
+    return render_template('index.html', access_token=access_token, track_id=track_id, genre=genre)
 
 @app.route('/new_track')
 def new_track():
+    genre = genres.get_genre()[random.randint(0, len(genres.get_genre())-1)]
+    track_ids = get_tracks_by_genre(sp, genre)
+    if(len(track_ids) == 0):
+        while(len(track_ids) != 0):
+                track_ids = get_tracks_by_genre(sp, genre)
     track_id = track_ids[random.randint(0, len(track_ids)-1)]
-    return jsonify({'track_id': track_id})
+    return jsonify({'track_id': track_id, 'genre':genre})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)

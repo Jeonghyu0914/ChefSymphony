@@ -27,6 +27,10 @@ h1 {
 p {
   font-size: 1.2em;
 }
+#genre {
+  font-size: 0.8em;
+  color: cadetblue;
+}
 .track-info {
   margin-top: 20px;
   border-top: 1px solid #555;
@@ -44,12 +48,6 @@ p {
 }
 .track-info p {
   margin: 5px 0;
-}
-.token {
-  margin-top: 20px;
-  font-size: 0.9em;
-  color: #bbb;
-  word-wrap: break-word;
 }
 #player {
   margin-top: 20px;

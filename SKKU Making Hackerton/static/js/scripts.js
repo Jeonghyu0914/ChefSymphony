@@ -1,5 +1,5 @@
 // Function to initialize the Spotify Web Playback SDK
-function initializeSpotifyPlayer(token, trackId) {
+function initializeSpotifyPlayer(token, trackId, genre) {
   // Create a new Spotify player instance
   const player = new Spotify.Player({
     name: "Web Playback SDK Quick Start Player",
@@ -75,6 +75,7 @@ function initializeSpotifyPlayer(token, trackId) {
       }
     );
     const data = await response.json();
+    document.getElementById("genre").textContent = genre;
     document.getElementById("track-title").textContent = data.name;
     document.getElementById("track-artist").textContent = data.artists
       .map((artist) => artist.name)
@@ -106,9 +107,15 @@ function initializeSpotifyPlayer(token, trackId) {
   document
     .getElementById("new-track-btn")
     .addEventListener("click", async () => {
+      document.getElementById("track-title").textContent = "Loading...";
+      document.getElementById("track-artist").textContent = "";
       const response = await fetch("/new_track");
       const data = await response.json();
       trackId = data.track_id;
+      genre = data.genre;
+      document.getElementById("track-title").textContent = data.name;
+      document.getElementById("track-artist").textContent = data.artists;
+      document.getElementById("genre").textContent = genre;
       fetchTrackDetails(token, trackId);
       playTrack(deviceId, trackId, token);
     });
