@@ -13,6 +13,13 @@
     <div class="container">
       <h1>ChefSymphony</h1>
 
+      <div>
+        <input id="R-slider" type="range" min="1" max="255" value="50" />
+        <input id="G-slider" type="range" min="1" max="255" value="50" />
+        <input id="B-slider" type="range" min="1" max="255" value="50" />
+        <input id="br-slider" type="range" min="1" max="255" value="50" />
+      </div>
+
       <!-- Display track information -->
       <div class="track-info">
         <h2>Track Information</h2>
@@ -63,6 +70,88 @@
       const app = initializeApp(firebaseConfig);
       const database = getDatabase(app);
 
+      // Function to perform when the image changes
+      function onImageChange() {
+        // Load the image and calculate the average RGB
+        const imgSrc = document.getElementById("track-image").src;
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.src = imgSrc;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+          const imageData = ctx.getImageData(0, 0, img.width, img.height);
+          const pixels = imageData.data;
+
+          let r = 0,
+            g = 0,
+            b = 0;
+          let totalLuminance = 0;
+          const pixelCount = img.width * img.height;
+
+          for (let i = 0; i < pixels.length; i += 4) {
+            r += pixels[i];
+            g += pixels[i + 1];
+            b += pixels[i + 2];
+
+            // Convert RGB to luminance using the formula: 0.299*R + 0.587*G + 0.114*B
+            const luminance =
+              0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2];
+            totalLuminance += luminance;
+          }
+          r = Math.floor(r / pixelCount);
+          g = Math.floor(g / pixelCount);
+          b = Math.floor(b / pixelCount);
+          const averageLuminance = Math.floor(totalLuminance / pixelCount);
+
+          document.getElementById("R-slider").value = r;
+          document.getElementById("G-slider").value = g;
+          document.getElementById("B-slider").value = b;
+          document.getElementById("br-slider").value = averageLuminance;
+
+          console.log(`Average RGB: (${r}, ${g}, ${b})`);
+          console.log(`Average Luminance: ${averageLuminance}`);
+
+          // Send RGB values to Firebase
+          const db = getDatabase(); // Firebase Realtime Database instance
+          const dbRef = ref(db, "LED");
+          set(dbRef, {
+            R: r,
+            G: g,
+            B: b,
+            Brightness: averageLuminance,
+            NUMS: 40,
+          })
+            .then(() => {
+              console.log("RGB data successfully written to Firebase.");
+            })
+            .catch((error) => {
+              console.error("Error writing RGB data to Firebase:", error);
+            });
+        };
+      }
+
+      // Select the image element
+      const imageElement = document.getElementById("track-image");
+
+      // Create a MutationObserver to watch for attribute changes
+      const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "src"
+          ) {
+            onImageChange(); // Call the function when the image source changes
+          }
+        }
+      });
+
+      // Start observing the image element for attribute changes
+      observer.observe(imageElement, { attributes: true });
+
       // Function to load data from Realtime Database
       async function loadData(database) {
         const dbRef = ref(database, "Sensors");
@@ -90,6 +179,54 @@
           console.error("Error getting data from Firebase:", error);
         }
       }
+
+      document.getElementById("R-slider").addEventListener("change", () => {
+        const db = getDatabase(); // Firebase Realtime Database instance
+        const dbRef = ref(db, "LED");
+        set(dbRef, {
+          R: Number(document.getElementById("R-slider").value),
+          G: Number(document.getElementById("G-slider").value),
+          B: Number(document.getElementById("B-slider").value),
+          Brightness: Number(document.getElementById("br-slider").value),
+          NUMS: 40,
+        }).then(() => console.log("R"));
+      });
+
+      document.getElementById("G-slider").addEventListener("change", () => {
+        const db = getDatabase(); // Firebase Realtime Database instance
+        const dbRef = ref(db, "LED");
+        set(dbRef, {
+          R: Number(document.getElementById("R-slider").value),
+          G: Number(document.getElementById("G-slider").value),
+          B: Number(document.getElementById("B-slider").value),
+          Brightness: Number(document.getElementById("br-slider").value),
+          NUMS: 40,
+        }).then(() => console.log("G"));
+      });
+
+      document.getElementById("B-slider").addEventListener("change", () => {
+        const db = getDatabase(); // Firebase Realtime Database instance
+        const dbRef = ref(db, "LED");
+        set(dbRef, {
+          R: Number(document.getElementById("R-slider").value),
+          G: Number(document.getElementById("G-slider").value),
+          B: Number(document.getElementById("B-slider").value),
+          Brightness: Number(document.getElementById("br-slider").value),
+          NUMS: 40,
+        }).then(() => console.log("B"));
+      });
+
+      document.getElementById("br-slider").addEventListener("change", () => {
+        const db = getDatabase(); // Firebase Realtime Database instance
+        const dbRef = ref(db, "LED");
+        set(dbRef, {
+          R: Number(document.getElementById("R-slider").value),
+          G: Number(document.getElementById("G-slider").value),
+          B: Number(document.getElementById("B-slider").value),
+          Brightness: Number(document.getElementById("br-slider").value),
+          NUMS: 40,
+        }).then(() => console.log("br"));
+      });
 
       // Fetch new track
       document

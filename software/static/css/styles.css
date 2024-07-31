@@ -73,3 +73,21 @@ a {
 a:hover {
   text-decoration: underline;
 }
+input [type="range"] {
+  -webkit-appearance: none;
+  background-color: #e0e0e0;
+  opacity: 0.8;
+  border-radius: 7.5px;
+  width: 30%;
+  height: 15px;
+  box-shadow: var(--box-shadow);
+}
+input [type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border-radius: 7.5px;
+  width: 15%;
+  height: 15px;
+  background-color: var(--gray-color);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+}

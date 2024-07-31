@@ -51,7 +51,7 @@ def refresh():
     # Process the data as needed
     temperature = data.get('Temperature')
     humidity = data.get('Humidity')
-    brightness = (data.get('Brightness').get('exterior') + data.get('Brightness').get('interior')) / 2
+    brightness = data.get('Brightness').get('interior')
     noise = data.get('Noise')
     
     genre = predFunc.predGenre(temperature, humidity, brightness, noise)
