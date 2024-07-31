@@ -1,15 +1,8 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
-import pandas as pd
-import time
 import random
-import os
-from flask import Flask, render_template, request, redirect, session, url_for, jsonify
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_cors import CORS
-import requests
 import genres
 
 client_id = 'f1482fea7e5843668f71fcd44165a9d7'
@@ -22,12 +15,6 @@ sp_oauth = SpotifyOAuth(client_id, client_secret, redirect_uri, scope='user-read
 # Spotify API authorization
 client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-# Firebase database authorization
-# cred = credentials.Certificate('/Users/hugh/Documents/GitHub/-CookIoT/SKKU Making Hackerton/firebaseKey.json')
-# firebase_admin.initialize_app(cred,{
-#     'databaseURL' : 'https://cookiot-test-default-rtdb.firebaseio.com/' 
-# }, name = f'{time.time()}')
 
 def get_tracks_by_genre(sp, genre):
     track_ids = []
